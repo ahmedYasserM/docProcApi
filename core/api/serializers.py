@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import UploadedImage
+from .models import UploadedImage, UploadedPdf
 import base64
 import uuid
 from django.core.files.base import ContentFile
 import binascii
-from utils.file_handlers import get_image_metadata
+from utils.file_handlers import get_image_metadata, get_pdf_metadata
 
 
 class Base64FileField(serializers.CharField):
@@ -18,6 +18,8 @@ class Base64FileField(serializers.CharField):
         if "image" in format:
             ext = format.split("/")[-1]
             file_name = f"{uuid.uuid4()}.{ext}"
+        elif "pdf" in format:
+            file_name = f"{uuid.uuid4()}.pdf"  
         else:
             raise serializers.ValidationError(
                 "Unsupported file type. Only images and PDFs are allowed."
@@ -78,3 +80,50 @@ class RotatedImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadedImage
         fields = ["id", "angle"]
+
+
+
+class UploadedPdfSerializer(serializers.ModelSerializer):
+    file = Base64FileField(write_only=True)
+    location = Base64FileField(source="file", read_only=True)
+
+    class Meta:
+        model = UploadedPdf
+        fields = [
+            "id",
+            "file",
+            "location",
+            "pages",
+            "page_width",
+            "page_height",
+            "created_at",
+            "updated_at",
+        ]
+
+        read_only_fields = [
+            "id",
+            "pages",
+            "page_width",
+            "page_height",
+            "created_at",
+            "updated_at",
+        ]
+
+    def create(self, validated_data):
+        pages, width, height = get_pdf_metadata(validated_data["file"])
+        validated_data["pages"] = pages
+        validated_data["page_width"] = width
+        validated_data["page_height"] = height
+        instance = UploadedPdf.objects.create(**validated_data)
+        return instance
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        if self.context.get("request").method == "POST":
+            representation.pop("pages", None)
+            representation.pop("page_width", None)
+            representation.pop("page_height", None)
+
+        return representation
+

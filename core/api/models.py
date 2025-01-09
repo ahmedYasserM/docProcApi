@@ -8,3 +8,10 @@ class UploadedImage(TrackingModel):
     width = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
     channels = models.IntegerField(default=0)
+
+
+class UploadedPdf(TrackingModel):
+    file = models.FileField(upload_to="pdfs/", default="pdfs/default.pdf")
+    pages = models.IntegerField(default=0)
+    page_width = models.IntegerField(default=0)
+    page_height = models.IntegerField(default=0)

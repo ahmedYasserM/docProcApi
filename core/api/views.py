@@ -1,9 +1,9 @@
-from .serializers import UploadedImageSerializer, RotatedImageSerializer
+from .serializers import UploadedImageSerializer, RotatedImageSerializer, UploadedPdfSerializer
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import UploadedImage
+from .models import UploadedImage, UploadedPdf
 from utils.file_handlers import rotate_image
 
 @api_view(["POST"])
@@ -17,6 +17,9 @@ def upload_document(request):
             serializer = UploadedImageSerializer(
                 data=data, context={"request": request}
             )
+        elif file_data.startswith("data:application/pdf"):
+            serializer = UploadedPdfSerializer(
+                data=data, context={"request": request})
         else:
             return Response(
                 {"error": "Unsupported file type. Only images and PDFs are allowed."},
@@ -74,3 +77,11 @@ def rotate_image_handler(request):
         return Response({"rotated_image": rotated_image}, status=status.HTTP_200_OK)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def get_pdfs(request):
+    pdfs = UploadedPdf.objects.all()
+    serializer = UploadedPdfSerializer(
+        pdfs, many=True, context={"request": request})
+    return Response(serializer.data, status=status.HTTP_200_OK)

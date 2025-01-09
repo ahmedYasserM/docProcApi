@@ -2,13 +2,14 @@ from django.core.files.base import ContentFile
 from PIL import Image
 import numpy as np
 import base64, io
+from pypdf import PdfReader
 
 
-def get_image_metadata(fileContent: ContentFile):
+def get_image_metadata(file_content: ContentFile):
     """
     Returns: (channels, width, height)
     """
-    img = np.array(Image.open(fileContent))
+    img = np.array(Image.open(file_content))
     if img.ndim == 2:
         channels = 1
     else:
@@ -29,3 +30,13 @@ def rotate_image(file_path, rotationAngle):
     encoded_img = f"data:image/jpeg;base64,{
         base64.b64encode(img_bytes_arr.read()).decode()}"
     return encoded_img
+
+
+def get_pdf_metadata(file_content: ContentFile):
+    """
+    Returns: (pages, width, height)
+    """
+    pdf_reader = PdfReader(file_content)
+    mediabox = pdf_reader.pages[0].mediabox
+    return (len(pdf_reader.pages), mediabox.width, mediabox.height)
+
