@@ -69,3 +69,12 @@ class UploadedImageSerializer(serializers.ModelSerializer):
             representation.pop("channels", None)
 
         return representation
+
+
+class RotatedImageSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    angle = serializers.FloatField()
+
+    class Meta:
+        model = UploadedImage
+        fields = ["id", "angle"]

@@ -1,9 +1,10 @@
-from .serializers import UploadedImageSerializer
+from .serializers import UploadedImageSerializer, RotatedImageSerializer
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import UploadedImage
+from utils.file_handlers import rotate_image
 
 @api_view(["POST"])
 def upload_document(request):
@@ -56,3 +57,20 @@ def handle_single_image(request, pk):
     else:
         image.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["POST"])
+def rotate_image_handler(request):
+    data = request.data
+    serializer = RotatedImageSerializer(data=data)
+    if serializer.is_valid():
+        pk = serializer.validated_data["id"]
+        angle = serializer.validated_data["angle"]
+        try:
+            image = UploadedImage.objects.get(pk=pk)
+        except UploadedImage.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        rotated_image = rotate_image(image.file.path, angle)
+        return Response({"rotated_image": rotated_image}, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
