@@ -2,7 +2,6 @@ import pytest
 from rest_framework.test import APIClient
 
 
-
 @pytest.fixture
 def encoded_images(): 
     """
@@ -25,6 +24,39 @@ def test_image_upload(client, encoded_images):
     
 
 @pytest.mark.django_db
-def test_get_images(): 
+def test_get_images(client, encoded_images): 
+    for encoded_image in encoded_images: 
+        response = client.post( "/api/upload/", {"file": encoded_image}, format="json")
+        assert response.status_code == 201 # HTTP_201_CREATED
+
     response = client.get("/api/images/")
     assert response.status_code == 200
+    assert len(response.data) == 3
+
+
+@pytest.mark.django_db
+def test_get_image_details(client, encoded_images): 
+    image = encoded_images[0]
+    response = client.post("/api/upload/", {"file": image}, format="json")
+    assert response.status_code == 201
+
+    image_id = response.data["id"]
+    response = client.get(f"/api/images/{image_id}/")
+    assert response.status_code == 200
+    assert response.data["width"] == 154
+    assert response.data["height"] == 148
+    assert response.data["channels"] == 3
+
+
+@pytest.mark.django_db
+def test_delete_image(client, encoded_images): 
+    image = encoded_images[0]
+    response = client.post("/api/upload/", {"file": image}, format="json")
+    assert response.status_code == 201
+
+    image_id = response.data["id"]
+    response = client.delete(f"/api/images/{image_id}/")
+    assert response.status_code == 204
+
+    response = client.get(f"/api/images/{image_id}/")
+    assert response.status_code == 404

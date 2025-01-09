@@ -41,3 +41,18 @@ def get_images(request):
         images, many=True, context={"request": request}
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["GET", "DELETE"])
+def handle_single_image(request, pk):
+    try:
+        image = UploadedImage.objects.get(pk=pk)
+    except UploadedImage.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializer = UploadedImageSerializer(
+            image, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
