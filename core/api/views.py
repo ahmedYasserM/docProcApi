@@ -1,10 +1,10 @@
-from .serializers import UploadedImageSerializer, RotatedImageSerializer, UploadedPdfSerializer
+from .serializers import UploadedImageSerializer, RotatedImageSerializer, UploadedPdfSerializer, PdfToImageSerializer
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import UploadedImage, UploadedPdf
-from utils.file_handlers import rotate_image
+from utils.file_handlers import rotate_image, convert_pdf_to_image
 
 @api_view(["POST"])
 def upload_document(request):
@@ -100,3 +100,19 @@ def handle_single_pdf(request, pk):
     else:
         pdf.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["POST"])
+def convert_pdf_to_image_handler(request):
+    data = request.data
+    serializer = PdfToImageSerializer(data=data)
+    if serializer.is_valid():
+        pk = serializer.validated_data["id"]
+        try:
+            pdf = UploadedPdf.objects.get(pk=pk)
+        except UploadedPdf.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        converted_image_list = convert_pdf_to_image(pdf.file.path)
+        return Response({"converted_images": converted_image_list}, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

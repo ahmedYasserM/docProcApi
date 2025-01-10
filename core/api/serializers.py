@@ -127,3 +127,11 @@ class UploadedPdfSerializer(serializers.ModelSerializer):
 
         return representation
 
+
+
+class PdfToImageSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = UploadedPdf
+        fields = ["id"]

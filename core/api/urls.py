@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import upload_document, get_images, handle_single_image, rotate_image_handler, get_pdfs, handle_single_pdf
+from .views import upload_document, get_images, handle_single_image, rotate_image_handler, get_pdfs, handle_single_pdf, convert_pdf_to_image_handler
 
 
 urlpatterns = [
@@ -9,4 +9,6 @@ urlpatterns = [
     path("rotate/", rotate_image_handler, name="rotate_image_handler"),
     path("pdfs/", get_pdfs, name="get_pdfs"),
     path("pdfs/<int:pk>/", handle_single_pdf, name="handle_single_pdf"),
+    path("convert-pdf-to-image/", convert_pdf_to_image_handler, name="convert_pdf_to_image_handler"),
 ]
+
