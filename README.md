@@ -184,6 +184,7 @@ A powerful Django REST API for processing Images and PDFs with features like rot
 
 ```bash
 git clone https://github.com/ahmedYasserM/docProcApi.git
+cd docProcApi
 ```
 
 2. Build docker image
