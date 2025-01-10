@@ -13,11 +13,14 @@ A powerful Django REST API for processing Images and PDFs with features like rot
 ## 🛠️ Tech Stack
 
 - Python 3.13+
+- uv
 - Django 5.1+
 - Django REST Framework
+- Pytest
 - Pillow (PIL)
 - PyPDF
 - PDF2Image
+- Docker
 
 ## 📝 API Documentation
 
@@ -173,4 +176,24 @@ A powerful Django REST API for processing Images and PDFs with features like rot
         ...
     ]
 }
+```
+
+## How to Use
+
+1. Clone the repository 
+
+```bash
+git clone https://github.com/ahmedYasserM/docProcApi.git
+```
+
+2. Build docker image
+
+```bash 
+docker build -t docprocapi .
+```
+
+3. Run docker container 
+
+```bash 
+docker run -p 8000:8000 docprocapi
 ```
