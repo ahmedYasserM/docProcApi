@@ -180,6 +180,16 @@ A powerful Django REST API for processing Images and PDFs with features like rot
 
 ## How to Use
 
+### Spawn a docker container directly from Docker Hub
+
+```bash
+docker run -p 8000:8000 ahmedyasserm/docprocapi
+```
+
+or 
+
+### Build and run the docker image locally
+
 1. Clone the repository 
 
 ```bash
