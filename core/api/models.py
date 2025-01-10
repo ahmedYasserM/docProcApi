@@ -11,7 +11,7 @@ class UploadedImage(TrackingModel):
 
 
 class UploadedPdf(TrackingModel):
-    file = models.FileField(upload_to="pdfs/", default="pdfs/default.pdf")
+    file = models.FileField(upload_to="pdfs/%y/%m/%d/", default="pdfs/default.pdf")
     pages = models.IntegerField(default=0)
     page_width = models.IntegerField(default=0)
     page_height = models.IntegerField(default=0)
