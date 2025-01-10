@@ -85,3 +85,18 @@ def get_pdfs(request):
     serializer = UploadedPdfSerializer(
         pdfs, many=True, context={"request": request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET", "DELETE"])
+def handle_single_pdf(request, pk):
+    try:
+        pdf = UploadedPdf.objects.get(pk=pk)
+    except UploadedPdf.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializer = UploadedPdfSerializer(pdf, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        pdf.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

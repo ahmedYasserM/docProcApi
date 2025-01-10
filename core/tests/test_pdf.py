@@ -36,3 +36,31 @@ def test_get_pdfs(client, encoded_pdfs):
     response = client.get("/api/pdfs/")
     assert response.status_code == 200
     assert len(response.data) == 3
+
+
+@pytest.mark.django_db
+def test_get_pdf_details(client, encoded_pdfs): 
+    pdf = encoded_pdfs[0]
+    response = client.post("/api/upload/", {"file": pdf}, format="json")
+    assert response.status_code == 201
+
+    pdf_id = response.data["id"]
+    response = client.get(f"/api/pdfs/{pdf_id}/")
+    assert response.status_code == 200
+    assert response.data["pages"] == 20
+    assert response.data["page_width"] == 612
+    assert response.data["page_height"] == 792
+
+
+@pytest.mark.django_db
+def test_delete_pdf(client, encoded_pdfs): 
+    pdf = encoded_pdfs[0]
+    response = client.post("/api/upload/", {"file": pdf}, format="json")
+    assert response.status_code == 201
+
+    pdf_id = response.data["id"]
+    response = client.delete(f"/api/pdfs/{pdf_id}/")
+    assert response.status_code == 204
+
+    response = client.get(f"/api/pdfs/{pdf_id}/")
+    assert response.status_code == 404
