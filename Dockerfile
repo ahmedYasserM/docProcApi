@@ -26,12 +26,17 @@ RUN uv run manage.py migrate
 # Stage 2: Runtime
 FROM python:3.13-alpine
 
+RUN apk add uv
+
 # Set the working directory
 WORKDIR /app
 
 # Copy only the installed dependencies from the build stage
 COPY --from=build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+RUN true # just to avoid (failed to export image error)
+
 COPY --from=build /usr/local/bin /usr/local/bin
+RUN true
 
 # Copy the application code
 COPY --from=build /app /app
