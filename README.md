@@ -50,12 +50,18 @@ A powerful Django REST API for processing Images and PDFs with features like rot
     {
         "id": image1_id,
         "location": image1_path_on_server,
+        "width": image1_width,
+        "height": image1_height,
+        "channels": image1_channels_count,
         "created_at": image1_created_at_timestamp,
         "updated_at": image1_update_timestamp
     },
     {
         "id": image2_id,
         "location": image2_path_on_server,
+        "width": image2_width,
+        "height": image2_height,
+        "channels": image2_channels_count,
         "created_at": image2_created_at_timestamp,
         "updated_at": image2_update_timestamp
     },
@@ -73,7 +79,7 @@ A powerful Django REST API for processing Images and PDFs with features like rot
     "location": image_path_on_server,
     "width": image_width,
     "height": image_height,
-    "channels": image_channels,
+    "channels": image_channels_count,
     "created_at": created_at_timestamp,
     "updated_at": updated_at_timestamp
 }
